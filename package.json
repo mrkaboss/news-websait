@@ -11,9 +11,16 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
+    "axios": "^1.13.6",
+    "i18next": "^25.8.14",
+    "mail": "^0.2.3",
+    "moon": "^1.0.0-beta.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-i18next": "^16.5.6",
+    "react-icons": "^5.6.0",
     "react-router-dom": "^7.13.0",
+    "sun": "^1.1.4",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {

@@ -1,0 +1,11 @@
+{
+  "app_name": "Amakuru y'Isi",
+  "nav": {
+    "home": "Ahabanza",
+    "world": "Isi",
+    "search": "Shakisha",
+    "live": "Imbonankubone"
+  },
+  "search_placeholder": "Shakisha amakuru...",
+  "hero_title": "Abayobozi b'isi bateraniye hamwe kugira ngo bige ku hazaza h'ikoranabuhanga"
+}

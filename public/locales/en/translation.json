@@ -1,0 +1,11 @@
+{
+  "app_name": "Global News",
+  "nav": {
+    "home": "Home",
+    "world": "World",
+    "search": "Search",
+    "live": "Live News"
+  },
+  "search_placeholder": "Search news...",
+  "hero_title": "Global leaders gather to discuss the future of technology"
+}
