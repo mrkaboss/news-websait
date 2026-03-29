@@ -16,7 +16,6 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Politics from "./pages/Politics";
-import CategoryNews from "./pages/CategortNews";
 import SearchNews from "./pages/SearchNews";
 import News from "./pages/News";
 import Teche from "./pages/Teche";
@@ -27,14 +26,12 @@ import NewsTicker from "./components/NewsTicker";
 import AddNews from "./pages/AddNews";
 import NewsDetails from "./pages/NewsDetails";
 import Dashboard from "./pages/Dashboard";
-
-
-
-
-
-
-
-
+import CategoryNews from "./pages/CategoryNews";
+import Finance from "./pages/Finance";
+import Entertainment from "./pages/Entertainment";
+import Technology from "./pages/Technology";
+import Health from "./pages/Health";
+import BreakingNews from "./components/BreakingNews";
 
 function App() {
   return (
@@ -43,31 +40,36 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="Contact" element={<Contact />} />
-        <Route path="News"element={<News/>}/>
+         <Route path="news/:id?" element={<NewsDetails />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="verify-email" element={<VerifyEmail />} />
-          <Route path="ResetPassword" element={<ResetPassword/>}/>
-          <Route path="TechNews"element={<TechNews/>}/>
-          <Route path="Sports"element={<Sports/>}/>
-          <Route path="World"element={<World/>}/>
-          <Route path="Business"element={<Business/>}/>
-          <Route path="AdminDashboard"element={<AdminDashboard/>}/>
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="About"element={<About/>}/>
-          <Route path="Terms"element={<Terms/>}/>
-          <Route path="Politics"element={<Politics/>}/>
-          <Route path="CategoryNews"element={<CategoryNews/>}/>
-          <Route path="SearchNews"element={<SearchNews/>}/>
-          <Route path="Teche"element={<Teche/>}/>
-          <Route path="Login"element={<ClientLogin/>}/>
-          <Route path="AdminLogin"element={<AdminLogin/>}/>
-          <Route path="LiveNews"element={<LiveNews/>}/>
-          <Route path="NewsTicker"element={<NewsTicker/>}/>
-          <Route path="AddNews"element={<AddNews/>}/>
-          <Route path="/news/:id" element={<NewsDetails />} />
-          <Route path="/Dashboard"element={Dashboard}/>
+          <Route path="ResetPassword" element={<ResetPassword />} />
+          <Route path="TechNews" element={<TechNews />} />
+          <Route path="Sports" element={<Sports />} />
+          <Route path="World" element={<World />} />
+          <Route path="Business" element={<Business />} />
+          <Route path="AdminDashboard" element={<AdminDashboard />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="About" element={<About />} />
+          <Route path="Terms" element={<Terms />} />
+          <Route path="Politics" element={<Politics />} />
+          <Route path="SearchNews" element={<SearchNews />} />
+          <Route path="Teche" element={<Teche />} />
+          <Route path="ClientLogin" element={<ClientLogin />} />
+          <Route path="AdminLogin" element={<AdminLogin />} />
+          <Route path="LiveNews" element={<LiveNews />} />
+          <Route path="NewsTicker" element={<NewsTicker />} />
+          <Route path="AddNews" element={<AddNews />} />
+          <Route path="NewsDetails/:id?" element={<NewsDetails />} />
+          <Route path="Dashboard" element={<Dashboard />} />
+          <Route path="CategoryNews" element={<CategoryNews />} />
+          <Route path="Finance" element={<Finance />} />
+          <Route path="Entertainment" element={<Entertainment />} />
+          <Route path="Technology" element={<Technology />} />
+          <Route path="Health" element={<Health />} />
+          <Route path="breaking-news" element={<BreakingNews />} />
           
         </Route>
       </Routes>

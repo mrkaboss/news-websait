@@ -1,131 +1,190 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { FaHeart, FaRegHeart, FaRegComment, FaCheckCircle, FaShareAlt, FaArrowLeft } from "react-icons/fa";
 
-export default function NewsDetails(){
+export default function NewsDetails() {
+  const { id } = useParams(); 
+  const [article, setArticle] = useState(null);
+  const [liked, setLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(120);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [comment, setComment] = useState("");
+  const [commentsList, setCommentsList] = useState([
+    { id: 1, user: "Kevine", text: "Iyi nkuru ni ukuri rwose! 👏", date: "2 mins ago" },
+    { id: 2, user: "Jean", text: "Ntabwo mbyemera neza ariko reka dutegereze.", date: "10 mins ago" }
+  ]);
 
-const { id } = useParams();
+  useEffect(() => {
+    // 1. Reba niba amakuru ari muri LocalStorage (Icyo dushaka ni ukureba inkuru ihuye na ya ID)
+    const allNews = JSON.parse(localStorage.getItem("allNews")) || [];
+    
+    if (allNews.length > 0 && allNews[id]) {
+      setArticle(allNews[id]);
+    } else {
+      
+      const dummyData = {
+        title: id === "0" ? "Uburyo bushya bwo gukoresha AI mu Rwanda" : `Inkuru nshya numero ${id}`,
+        author: "Byiringiro Moses",
+        authorRole: "Senior Tech Journalist",
+        image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+        videoUrl: id === "0" ? "https://www.youtube.com/embed/dQw4w9WgXcQ" : null, 
+        content: `Iyi ni inkuru irambuye y'inkuru numero ${id}. Ikoranabuhanga ririmo guhindura byinshi...`,
+        date: new Date().toLocaleDateString(),
+        category: "Technology"
+      };
+      setArticle(dummyData);
+    }
+    
+    window.scrollTo(0, 0);
+  }, [id]);
 
-const [news,setNews] = useState(null);
-const [related,setRelated] = useState([]);
+  if (!article) return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+  );
 
-useEffect(()=>{
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+    if (comment.trim() === "") return;
+    const newCommentObj = {
+      id: Date.now(),
+      user: "Mwe (You)",
+      text: comment,
+      date: "Just now"
+    };
+    setCommentsList([newCommentObj, ...commentsList]);
+    setComment("");
+  };
 
-fetch(`http://localhost:5000/api/news/${id}`)
-.then(res=>res.json())
-.then(data=>setNews(data))
+  return (
+    <div className="bg-gray-50 min-h-screen pb-20">
+    
+      <div className="max-w-4xl mx-auto px-4 pt-6 flex justify-between items-center">
+        <Link to="/News" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 font-bold transition">
+          <FaArrowLeft /> Back to News
+        </Link>
+        <span className="text-xs font-mono bg-gray-200 px-3 py-1 rounded-full text-gray-500">
+          Ref: #{id}
+        </span>
+      </div>
 
-fetch("http://localhost:5000/api/news")
-.then(res=>res.json())
-.then(data=>setRelated(data.slice(0,3)))
+      <div className="max-w-4xl mx-auto px-4 pt-10">
+        
+        <div className="flex items-center justify-between mb-8 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl uppercase">
+              {article.author ? article.author.charAt(0) : "A"}
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-800 flex items-center gap-1">
+                {article.author} <FaCheckCircle className="text-blue-500 text-xs" />
+              </h4>
+              <p className="text-xs text-gray-500">{article.authorRole}</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => setIsFollowing(!isFollowing)}
+            className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
+              isFollowing ? "bg-gray-200 text-gray-600" : "bg-black text-white hover:bg-gray-800"
+            }`}
+          >
+            {isFollowing ? "Following" : "Follow +"}
+          </button>
+        </div>
 
-},[id])
+        <span className="bg-blue-100 text-blue-600 px-4 py-1 rounded-lg text-xs font-black uppercase tracking-widest">
+          {article.category}
+        </span>
+        <h1 className="text-3xl md:text-5xl font-black text-gray-900 mt-4 leading-tight">
+          {article.title}
+        </h1>
+        
+        <div className="flex items-center gap-4 text-gray-400 text-sm mt-6 border-b pb-6">
+          <span>{article.date}</span>
+          <span>•</span>
+          <span>5 min read</span>
+        </div>
 
-if(!news){
-return <p className="text-center py-20">Loading...</p>
-}
+        <div className="my-10 rounded-3xl overflow-hidden shadow-2xl">
+          {article.videoUrl ? (
+            <div className="aspect-video">
+              <iframe 
+                className="w-full h-full"
+                src={article.videoUrl} 
+                title="Video news"
+                allowFullScreen
+              ></iframe>
+            </div>
+          ) : (
+            <img src={article.image || "https://via.placeholder.com/800x400"} alt="" className="w-full h-auto object-cover" />
+          )}
+        </div>
 
-return(
+        <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-12">
+          {article.content.split('\n').map((paragraph, i) => (
+            <p key={i} className="mb-4">{paragraph}</p>
+          ))}
+        </div>
 
-<div className="bg-gray-50 min-h-screen">
+        <div className="flex items-center gap-8 py-6 border-t border-b">
+          <button 
+            onClick={() => {setLiked(!liked); setLikesCount(liked ? likesCount - 1 : likesCount + 1)}}
+            className="flex items-center gap-2 group"
+          >
+            <div className={`p-3 rounded-full transition ${liked ? "bg-pink-100 text-pink-600" : "bg-gray-100 group-hover:bg-pink-50"}`}>
+              {liked ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
+            </div>
+            <span className="font-bold text-gray-700">{likesCount} Likes</span>
+          </button>
 
-{/* NEWS CONTAINER */}
-<div className="max-w-5xl mx-auto px-6 py-10">
+          <button className="flex items-center gap-2 group text-gray-600">
+            <div className="p-3 rounded-full bg-gray-100 group-hover:bg-blue-50 transition">
+              <FaRegComment size={24} />
+            </div>
+            <span className="font-bold">{commentsList.length} Comments</span>
+          </button>
 
-{/* IMAGE */}
-<img
-src={news.image}
-alt={news.title}
-className="w-full h-[420px] object-cover rounded-xl"
-/>
+          <button className="ml-auto p-3 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+            <FaShareAlt />
+          </button>
+        </div>
+        <div className="mt-12 bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+          <h3 className="text-xl font-bold mb-6 text-gray-900">Thoughts on this article</h3>
+          
+          <form onSubmit={handleCommentSubmit} className="mb-10">
+            <textarea 
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="What do you think?"
+              className="w-full p-5 bg-gray-50 border-none rounded-2xl h-32 focus:ring-2 focus:ring-blue-500 outline-none transition text-gray-700"
+            ></textarea>
+            <button className="mt-4 bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg">
+              Post Comment
+            </button>
+          </form>
 
-{/* TITLE */}
-<h1 className="text-4xl font-bold mt-6">
-{news.title}
-</h1>
+          <div className="space-y-8">
+            {commentsList.map(item => (
+              <div key={item.id} className="flex gap-4">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-blue-600 uppercase text-xs">
+                  {item.user.charAt(0)}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h5 className="font-bold text-sm text-gray-800">{item.user}</h5>
+                    <span className="text-[10px] text-gray-400 font-medium">{item.date}</span>
+                  </div>
+                  <p className="text-gray-600 text-sm mt-1 bg-gray-50 p-4 rounded-r-2xl rounded-bl-2xl">
+                    {item.text}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-{/* AUTHOR */}
-<p className="text-gray-500 mt-2">
-By {news.author?.name || "Admin"} • {new Date(news.createdAt).toDateString()}
-</p>
-
-{/* SHARE */}
-<div className="flex gap-4 mt-4">
-
-<a
-href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`}
-target="_blank"
-className="bg-blue-600 text-white px-4 py-2 rounded"
->
-Facebook
-</a>
-
-<a
-href={`https://api.whatsapp.com/send?text=${window.location.href}`}
-target="_blank"
-className="bg-green-600 text-white px-4 py-2 rounded"
->
-WhatsApp
-</a>
-
-<a
-href={`https://twitter.com/intent/tweet?url=${window.location.href}`}
-target="_blank"
-className="bg-black text-white px-4 py-2 rounded"
->
-Twitter
-</a>
-
-</div>
-
-{/* DESCRIPTION */}
-<p className="text-gray-700 mt-6 text-lg leading-8">
-{news.description}
-</p>
-
-</div>
-
-{/* RELATED NEWS */}
-<div className="max-w-6xl mx-auto px-6 py-12">
-
-<h2 className="text-2xl font-bold mb-6">
-Related News
-</h2>
-
-<div className="grid md:grid-cols-3 gap-6">
-
-{related.map((item)=>(
-<Link
-to={`/news/${item._id}`}
-key={item._id}
-className="bg-white shadow rounded-lg overflow-hidden"
->
-
-<img
-src={item.image}
-className="h-40 w-full object-cover"
-/>
-
-<div className="p-4">
-
-<h3 className="font-semibold">
-{item.title}
-</h3>
-
-<p className="text-gray-500 text-sm mt-2">
-{new Date(item.createdAt).toDateString()}
-</p>
-
-</div>
-
-</Link>
-))}
-
-</div>
-
-</div>
-
-</div>
-
-)
-
+      </div>
+    </div>
+  );
 }

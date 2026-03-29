@@ -37,7 +37,6 @@ export default function AdminDashboard() {
         Admin Dashboard
       </h1>
 
-      {/* ADD NEWS */}
 
       <div className="bg-white shadow rounded-xl p-6 mb-10">
 
@@ -53,21 +52,32 @@ export default function AdminDashboard() {
           className="border p-2 w-full mb-3"
         />
 
-        <input
-          type="text"
-          placeholder="Category (Tech / Business / Sports / World)"
-          value={category}
-          onChange={(e)=>setCategory(e.target.value)}
-          className="border p-2 w-full mb-3"
-        />
-
-        <input
-          type="text"
-          placeholder="Image URL"
-          value={image}
-          onChange={(e)=>setImage(e.target.value)}
-          className="border p-2 w-full mb-3"
-        />
+       <div>
+  <label className="block text-sm font-medium mb-1 text-gray-700">Category</label>
+  <select
+    value={category}
+    onChange={(e) => setCategory(e.target.value)}
+    className="border p-2 w-full mb-3 rounded-xl bg-white outline-none focus:ring-2 focus:ring-blue-400"
+    required
+  >
+    <option value="">-- Hitamo Category --</option>
+    <option value="Tech">Tech</option>
+    <option value="Business">Business</option>
+    <option value="Sports">Sports</option>
+    <option value="World">World</option>
+    <option value="Entertainment">Entertainment</option>
+  </select>
+</div>
+       <div className="p-3">
+          <label className="block text-sm font-medium mb-1">Select Image</label>
+          <input
+            type="file"
+            accept="image/*" 
+            onChange={(e) => setImage(e.target.files[0])} 
+            className="border p-3 w-full rounded cursor-pointer"
+            required
+          />
+        </div>
 
         <button
           onClick={addNews}
