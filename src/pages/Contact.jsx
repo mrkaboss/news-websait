@@ -1,5 +1,19 @@
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaGithub } from "react-icons/fa";
 export default function Contact() {
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await fetch("http://localhost:3000/api/v1/contact/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    const result = await response.json();
+    if(result.success) alert("Ubutumwa bwageze muri Backend!");
+  } catch (error) {
+    console.log("Error:", error);
+  }
+};
   return (
     <div className="min-h-screen bg-gradient-to-r from-pink-600 to-purple-800 flex items-center justify-center p-6">
 

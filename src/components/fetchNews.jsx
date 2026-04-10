@@ -1,17 +1,16 @@
-useEffect(()=>{
+useEffect(() => {
+  const fetchNews = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/v1/news`);
+      const data = await res.json();
+      const newsArray = Array.isArray(data) ? data : (data.news || data.data || []);
+      setNews(newsArray);
+    } catch (err) {
+      console.log("Ticker Error:", err);
+    }
+  };
 
-const fetchNews = ()=>{
-
-fetch("https://gnews.io/api/v4/top-headlines?lang=en&token=YOUR_API_KEY")
-.then(res=>res.json())
-.then(data=>setNews(data.articles || []))
-
-}
-
-fetchNews()
-
-const interval = setInterval(fetchNews,60000)
-
-return ()=>clearInterval(interval)
-
-},[])
+  fetchNews();
+  const interval = setInterval(fetchNews, 60000);
+  return () => clearInterval(interval);
+}, []);

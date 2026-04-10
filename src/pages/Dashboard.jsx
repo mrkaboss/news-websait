@@ -6,7 +6,13 @@ export default function Dashboard() {
 
   const fetchNews = () => {
     getMyNews().then((res) => {
-      setNews(res.data.data);
+      console.log("Amakuru avuye muri Backend:", res); 
+      
+     
+      const fetchedNews = res.data?.data || res.data || [];
+      setNews(fetchedNews);
+    }).catch(err => {
+      console.error("Dashboard Error:", err);
     });
   };
 

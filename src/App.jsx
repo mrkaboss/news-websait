@@ -32,15 +32,26 @@ import Entertainment from "./pages/Entertainment";
 import Technology from "./pages/Technology";
 import Health from "./pages/Health";
 import BreakingNews from "./components/BreakingNews";
+import SweetNews from "./pages/SweetNews";
+import DeepNews from "./pages/DeepNews";
+import Agriculture from "./pages/Agriculture";
+import History from "./pages/History";
+import Economy from "./pages/Economy";
+import ContactAuthor from "./components/ContactAuthor";
+import Radio from "./pages/Radio";
+import AddAds from "./pages/AddAds";
+import Television from "./pages/Television";
+
+
 
 function App() {
   return (
     <BrowserRouter>
+      
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="Contact" element={<Contact />} />
-         <Route path="news/:id?" element={<NewsDetails />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
@@ -62,7 +73,7 @@ function App() {
           <Route path="LiveNews" element={<LiveNews />} />
           <Route path="NewsTicker" element={<NewsTicker />} />
           <Route path="AddNews" element={<AddNews />} />
-          <Route path="NewsDetails/:id?" element={<NewsDetails />} />
+        <Route path="NewsDetails/:id?" element={<NewsDetails />} />
           <Route path="Dashboard" element={<Dashboard />} />
           <Route path="CategoryNews" element={<CategoryNews />} />
           <Route path="Finance" element={<Finance />} />
@@ -70,7 +81,16 @@ function App() {
           <Route path="Technology" element={<Technology />} />
           <Route path="Health" element={<Health />} />
           <Route path="breaking-news" element={<BreakingNews />} />
-          
+          <Route path="sweet-news" element={<SweetNews />} />
+          <Route path="deep-news" element={<DeepNews />} />
+          <Route path="agriculture" element={<Agriculture />} />
+          <Route path="history" element={<History />} />
+          <Route path="economy" element={<Economy />} />
+          <Route path="contact-author/:authorId" element={<ContactAuthor />} />
+          <Route path="News" element={<News />} />
+          <Route path="Radio" element={<Radio/>} />
+          <Route path="AddAds" element={<AddAds />} />
+          <Route path="Television" element={<Television />} />
         </Route>
       </Routes>
     </BrowserRouter>

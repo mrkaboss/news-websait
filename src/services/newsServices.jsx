@@ -1,5 +1,6 @@
 import API from "./api";
 
+
 export const getNews = () => API.get("/news");
 
 

@@ -1,137 +1,216 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import API_URL from "../config/api.js";
+
+const CATEGORIES = ["All", "Sports", "Technology", "World", "Politics", "Business", "Culture"];
+
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-3xl overflow-hidden animate-pulse">
+      <div className="h-56 bg-gray-200" />
+      <div className="p-6 space-y-3">
+        <div className="h-3 bg-gray-200 rounded w-1/4" />
+        <div className="h-5 bg-gray-200 rounded w-full" />
+        <div className="h-5 bg-gray-200 rounded w-3/4" />
+        <div className="h-3 bg-gray-200 rounded w-1/2" />
+      </div>
+    </div>
+  );
+}
+
+function NewsCard({ item, index, featured }) {
+  return (
+    <div
+      className={`bg-white rounded-3xl overflow-hidden group flex flex-col transition-all duration-300 hover:-translate-y-1 ${
+        featured ? "md:col-span-2" : ""
+      }`}
+      style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.07)" }}
+    >
+      <div className={`overflow-hidden relative ${featured ? "h-72" : "h-52"}`}>
+        <img
+          src={item.image || item.urlToImage || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80"}
+          alt={item.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={e => { e.currentTarget.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80"; }}
+        />
+        
+        <span className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-md">
+          {item.category || item.source?.name || "News"}
+        </span>
+        {featured && (
+          <span className="absolute top-4 right-4 bg-black/70 text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-sm">
+            ★ Featured
+          </span>
+        )}
+       
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
+
+      <div className={`p-6 flex flex-col flex-grow ${featured ? "p-8" : ""}`}>
+        <h3
+          className={`font-black text-gray-900 leading-snug mb-3 line-clamp-2 group-hover:text-red-600 transition-colors ${
+            featured ? "text-2xl" : "text-base"
+          }`}
+        >
+          {item.title}
+        </h3>
+
+        {item.description && (
+          <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2">
+            {item.description}
+          </p>
+        )}
+
+        <div className="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center">
+          <span className="text-gray-400 text-[11px] font-bold uppercase tracking-wide">
+            {item.createdAt || item.publishedAt
+              ? new Date(item.createdAt || item.publishedAt).toLocaleDateString("en-US", {
+                  month: "short", day: "numeric", year: "numeric",
+                })
+              : new Date().toDateString()}
+          </span>
+          <Link
+            to={`/NewsDetails/${item._id || index}`}
+            className="bg-gray-900 text-white text-[10px] font-black px-5 py-2.5 rounded-2xl uppercase tracking-widest hover:bg-red-600 transition-all active:scale-95"
+          >
+            Soma →
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function News() {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const API_KEY = "YOUR_GNEWS_API_KEY"; 
+  const [error, setError] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch(`https://gnews.io/api/v4/top-headlines?lang=en&token=${API_KEY}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.articles) {
-          setNews(data.articles);
-        }
+    const fetchNews = async () => {
+      try {
+        setLoading(true);
+        setError(false);
+        const response = await fetch(`${API_URL}/api/v1/news`);
+        const data = await response.json();
+
+        const newsArray = Array.isArray(data)
+          ? data
+          : data.data || data.news || data.articles || [];
+
+        setNews(newsArray);
+      } catch (err) {
+        console.error("News Error:", err);
+        setError(true);
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching news:", error);
-        setLoading(false);
-      });
+      }
+    };
+    fetchNews();
   }, []);
 
+  const filtered = news
+    .filter(item =>
+      activeCategory === "All" ||
+      item.category?.toLowerCase() === activeCategory.toLowerCase()
+    )
+    .filter(item =>
+      search === "" ||
+      item.title?.toLowerCase().includes(search.toLowerCase())
+    );
+
   return (
-    <div className="bg-gray-100 min-h-screen">
-      {news.map((item, index) => (
-  <div key={index} className="news-card">
-    <img src={item.image} alt={item.title} />
-    <h3>{item.title}</h3>
-    <Link 
-      to={`/NewsDetails/${index}`} 
-      className="text-blue-600 font-bold"
-    >
-      Read More →
-    </Link>
-  </div>
-))}
+    <div className="bg-gray-50 min-h-screen pb-20 font-sans">
       <div className="max-w-7xl mx-auto py-10 px-6">
+
         
-{news.map((item) => (
-  <div key={item.id} className="bg-white p-4 rounded-xl shadow">
-    <img src={item.image} alt="" className="w-full h-40 object-cover rounded-lg" />
-    <h3 className="font-bold mt-2">{item.title}</h3>
-    
-   
-    <Link 
-      to={`/NewsDetails/${item.id}`} 
-      className="mt-4 inline-block text-blue-600 font-bold text-sm hover:underline"
-    >
-      Read More →
-    </Link>
-  </div>
-))}
-        <div className="bg-white rounded-2xl overflow-hidden shadow-lg grid md:grid-cols-2 mb-12 border-l-4 border-blue-600">
-          <img src="Logo-photo.jpeg" alt="Logo" className="w-full h-full object-cover" />
-          <div className="p-8 flex flex-col justify-center">
-            <span className="text-sm text-blue-600 font-bold uppercase tracking-widest italic">Breaking News</span>
-            <h1 className="text-3xl font-bold mt-4 text-gray-900">Global Leaders Meet to Discuss Economy</h1>
-            <p className="text-gray-500 mt-3 leading-relaxed">Leaders from different countries meet to discuss global economic challenges and solutions for the future.</p>
-            <button className="mt-6 bg-blue-600 text-white px-8 py-2 rounded-full hover:bg-blue-700 w-fit transition-all shadow-md">Read More</button>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 border-b pb-8">
+          <div>
+            <p className="text-red-600 text-[10px] font-black uppercase tracking-[4px] mb-2">
+              {new Date().toDateString()}
+            </p>
+            <h1 className="text-4xl font-black text-gray-900 tracking-tighter leading-none">
+              GLOBAL <span className="text-red-600">NEWS</span>
+            </h1>
+            <p className="text-gray-400 text-sm mt-1 font-medium">
+              {news.length} inkuru ziboneka
+            </p>
+          </div>
+
+          
+          <div className="relative w-full md:w-72">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+            <input
+              type="text"
+              placeholder="Shakisha inkuru..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm font-medium outline-none focus:ring-2 focus:ring-red-500 transition"
+            />
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
-          {news.slice(0, 3).map((item, index) => (
-            <div key={index} className="bg-white shadow-sm rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition">
-              <img src={item.image} alt="" className="h-44 w-full object-cover" />
-              <div className="p-5">
-                <h3 className="font-bold text-gray-800 line-clamp-2 leading-tight">{item.title}</h3>
-                <a href={item.url} target="_blank" rel="noreferrer" className="text-red-600 font-bold text-xs mt-4 block uppercase tracking-tighter">Read full story →</a>
-              </div>
-            </div>
+        
+        <div className="flex gap-2 flex-wrap mb-10">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-5 py-2 rounded-full text-[11px] font-black uppercase tracking-widest border transition-all ${
+                activeCategory === cat
+                  ? "bg-red-600 text-white border-red-600"
+                  : "bg-white text-gray-500 border-gray-200 hover:border-red-300 hover:text-red-600"
+              }`}
+            >
+              {cat}
+            </button>
           ))}
         </div>
 
-        <div className="mb-16">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-            <span className="w-2 h-8 bg-blue-600 rounded-full"></span> Trending Categories
-          </h2>
-          <div className="flex flex-wrap gap-4">
-            {["Technology", "Politics", "Sports", "Health", "Entertainment", "Finance" ,"World" , ""].map((cat) => (
-              <Link key={cat} to={`/${cat}`} className="bg-white px-6 py-3 rounded-xl shadow-sm border border-gray-200 font-semibold text-gray-700 hover:bg-blue-600 hover:text-white transition-all">
-                {cat}
-              </Link>
+       
+        {loading && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        )}
+
+        
+        {error && !loading && (
+          <div className="text-center py-32 bg-white rounded-3xl shadow-sm">
+            <p className="text-5xl mb-4">📡</p>
+            <p className="text-gray-400 font-bold text-lg mb-6">Backend ntiyunganye — Fungura server yawe</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-red-600 text-white px-8 py-3 rounded-2xl font-black text-sm hover:bg-red-700 transition"
+            >
+              Ongera Gerageza
+            </button>
+          </div>
+        )}
+
+       
+        {!loading && !error && filtered.length > 0 && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filtered.map((item, index) => (
+              <NewsCard
+                key={item._id || index}
+                item={item}
+                index={index}
+                featured={index === 0}
+              />
             ))}
           </div>
-        </div>
+        )}
 
-        <div className="pb-16">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">Latest News</h2>
-            <Link to="/Business" className="text-blue-600 font-semibold hover:underline">View all Business →</Link>
+        
+        {!loading && !error && filtered.length === 0 && (
+          <div className="text-center py-32 bg-white rounded-3xl shadow-sm">
+            <p className="text-5xl mb-4">🔍</p>
+            <p className="text-gray-400 font-bold text-lg">Nta nkuru ziboneka muri iki cyiciro</p>
           </div>
-
-          {loading ? (
-            <div className="text-center py-20 text-gray-400 italic">Fetching the latest headlines...</div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {news.map((item, index) => (
-                <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all flex flex-col border border-gray-100">
-                  <img src={item.image || "https://via.placeholder.com/300"} alt={item.title} className="h-40 w-full object-cover" />
-                  <div className="p-4 flex-grow flex flex-col">
-                    <span className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">{item.source.name}</span>
-                    <h3 className="font-bold mt-2 text-sm text-gray-800 line-clamp-2 leading-snug">{item.title}</h3>
-                    <div className="mt-auto pt-4 flex justify-between items-center border-t border-gray-50">
-                      <span className="text-gray-400 text-[10px]">{new Date(item.publishedAt).toLocaleDateString()}</span>
-                      <Link to="/Business" className="text-red-600 text-[10px] font-bold uppercase hover:underline">View</Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="bg-gray-900 rounded-3xl p-10 text-white flex flex-col md:flex-row items-center justify-between mb-16 shadow-2xl">
-          <div className="md:max-w-md mb-6 md:mb-0">
-            <h2 className="text-3xl font-bold mb-2">Subscribe to our Newsletter</h2>
-            <p className="text-gray-400">Get the most important stories delivered to your inbox every morning.</p>
-          </div>
-          <div className="flex w-full md:w-auto gap-2">
-            <input type="email" placeholder="Enter your email" className="bg-gray-800 border border-gray-700 px-6 py-3 rounded-full outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-64 text-sm" />
-            <button className="bg-blue-600 px-8 py-3 rounded-full font-bold hover:bg-blue-700 transition shadow-lg">Join</button>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center gap-6 border-t pt-12">
-          <p className="text-gray-400 text-sm">© 2026 MyNews Platform. All rights reserved.</p>
-          <Link to="/" className="bg-red-600 text-white px-10 py-3 rounded-full font-bold hover:bg-red-700 transition shadow-lg transform active:scale-95">
-            Back Home
-          </Link>
-        </div>
-
+        )}
       </div>
     </div>
   );

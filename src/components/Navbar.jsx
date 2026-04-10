@@ -29,6 +29,8 @@ export default function Navbar() {
             <Link to="/Contact" className="hover:text-red-600 transition">{t('nav.Contact', 'Contact')}</Link>
             <Link to="/SearchNews" className="hover:text-red-600 transition">{t('nav.search', 'Search')}</Link>
             <Link to="/LiveNews" className="hover:text-red-600 transition">{t('nav.live', 'Live')}</Link>
+          
+          
           </div>
           <div className="hidden md:flex items-center gap-4">
             <div className="flex gap-1 border rounded-lg p-1 bg-gray-50 dark:bg-gray-800">
