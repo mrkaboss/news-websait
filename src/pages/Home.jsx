@@ -5,7 +5,9 @@ import BreakingNews from "../components/BreakingNews";
 import LatestNews from "../components/LatestNews";
 import TrendingNews from "../components/TrendingNews";
 import NewsTicker from "../components/NewsTicker";
+
 import API_URL from "../config/api.js";
+
  
 
 const HERO_SLIDES = [
@@ -213,13 +215,13 @@ export default function Home() {
             to="/AddAds" 
             className="flex items-center gap-2 bg-red-600 text-white px-8 py-3 rounded-2xl font-black shadow-lg hover:bg-red-700 transition-all active:scale-95 uppercase text-xs tracking-wider"
           >
-            <span>📢</span> AMAMAZA
+            <span>📢</span> create Ad
           </Link>
           <Link 
-            to="/News" 
+            to="/Live" 
             className="flex items-center gap-2 bg-red-600 text-white px-8 py-3 rounded-2xl font-black shadow-lg hover:bg-red-700 transition-all active:scale-95 uppercase text-xs tracking-wider"
           >
-            <span>📰</span> NEWS
+            <span>📰</span> Go Live
           </Link>
           <Link 
             to="/Radio" 
@@ -279,6 +281,7 @@ export default function Home() {
           <div className="space-y-10">
             <LatestNews />
             <TrendingNews />
+            
  
             <div className="grid grid-cols-2 gap-4">
               <Link to="/sweet-news" className="bg-yellow-400 p-4 rounded-2xl text-center font-black text-xs hover:scale-105 transition shadow-sm">

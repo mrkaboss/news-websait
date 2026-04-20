@@ -16,7 +16,6 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Politics from "./pages/Politics";
-import SearchNews from "./pages/SearchNews";
 import News from "./pages/News";
 import Teche from "./pages/Teche";
 import ClientLogin from "./pages/ClientLogin";
@@ -41,13 +40,12 @@ import ContactAuthor from "./components/ContactAuthor";
 import Radio from "./pages/Radio";
 import AddAds from "./pages/AddAds";
 import Television from "./pages/Television";
-
+import Live from "./pages/Live";
 
 
 function App() {
   return (
     <BrowserRouter>
-      
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -66,14 +64,13 @@ function App() {
           <Route path="About" element={<About />} />
           <Route path="Terms" element={<Terms />} />
           <Route path="Politics" element={<Politics />} />
-          <Route path="SearchNews" element={<SearchNews />} />
           <Route path="Teche" element={<Teche />} />
           <Route path="ClientLogin" element={<ClientLogin />} />
           <Route path="AdminLogin" element={<AdminLogin />} />
           <Route path="LiveNews" element={<LiveNews />} />
           <Route path="NewsTicker" element={<NewsTicker />} />
           <Route path="AddNews" element={<AddNews />} />
-        <Route path="NewsDetails/:id?" element={<NewsDetails />} />
+          <Route path="NewsDetails/:id?" element={<NewsDetails />} />
           <Route path="Dashboard" element={<Dashboard />} />
           <Route path="CategoryNews" element={<CategoryNews />} />
           <Route path="Finance" element={<Finance />} />
@@ -91,6 +88,8 @@ function App() {
           <Route path="Radio" element={<Radio/>} />
           <Route path="AddAds" element={<AddAds />} />
           <Route path="Television" element={<Television />} />
+          <Route path="Live" element={<Live />} />
+          
         </Route>
       </Routes>
     </BrowserRouter>

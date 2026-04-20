@@ -27,10 +27,9 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-6 font-medium text-sm">
             <Link to="/" className="hover:text-red-600 transition">{t('nav.home', 'Home')}</Link>
             <Link to="/Contact" className="hover:text-red-600 transition">{t('nav.Contact', 'Contact')}</Link>
-            <Link to="/SearchNews" className="hover:text-red-600 transition">{t('nav.search', 'Search')}</Link>
+            <Link to="/News" className="hover:text-red-600 transition">{t('nav.News', 'News')}</Link>
             <Link to="/LiveNews" className="hover:text-red-600 transition">{t('nav.live', 'Live')}</Link>
-          
-          
+           
           </div>
           <div className="hidden md:flex items-center gap-4">
             <div className="flex gap-1 border rounded-lg p-1 bg-gray-50 dark:bg-gray-800">

@@ -4,7 +4,7 @@ const API = axios.create({
   baseURL: "http://localhost:3000/api/v1"
 });
 
-
+// VITE_API_URL=http://localhost:3000
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
 
