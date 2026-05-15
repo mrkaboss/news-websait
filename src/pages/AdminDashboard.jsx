@@ -60,12 +60,22 @@ export default function AdminDashboard() {
     className="border p-2 w-full mb-3 rounded-xl bg-white outline-none focus:ring-2 focus:ring-blue-400"
     required
   >
-    <option value="">-- Hitamo Category --</option>
+    <option value="">-- select Category --</option>
     <option value="Tech">Tech</option>
     <option value="Business">Business</option>
     <option value="Sports">Sports</option>
     <option value="World">World</option>
     <option value="Entertainment">Entertainment</option>
+    <option value="Finance">Finance</option>
+    <option value="Economy">Economy</option>
+    <option value="Health">Health</option>
+    <option value="History">History</option>
+    <option value="DeepNews">DeepNews</option>
+    <option value="Politics">Politics</option>
+    <option value="PrivacyPolicy">PrivacyPolicy</option>
+    <option value="SweetNews">SweetNews</option>
+    
+
   </select>
 </div>
        <div className="p-3">

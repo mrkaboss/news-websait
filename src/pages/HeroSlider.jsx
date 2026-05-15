@@ -36,17 +36,16 @@ return(
 
 <div className="relative w-full h-[450px] overflow-hidden rounded-xl">
 
-{/* IMAGE */}
+
 <img
 src={news[current]?.image}
 alt={news[current]?.title}
 className="w-full h-full object-cover transition-all duration-700"
 />
 
-{/* DARK OVERLAY */}
+
 <div className="absolute inset-0 bg-black/50"></div>
 
-{/* TEXT */}
 <div className="absolute bottom-10 left-10 text-white max-w-xl">
 
 <h2 className="text-3xl md:text-4xl font-bold leading-tight">

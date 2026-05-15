@@ -1,6 +1,5 @@
 import { useState } from "react";
-// 1. Shaho .js niba Vite ikomeje kwanga
-// 2. Genzura niba dosiye iri muri src/services/newsService.js
+
 import { createNews } from "../services/newsService.js"; 
 
 export default function CreateNews() {

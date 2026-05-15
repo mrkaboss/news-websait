@@ -23,20 +23,20 @@ export default function Finance() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="bg-emerald-900 py-16 text-white text-center">
-        <div className="max-w-7xl mx-auto px-6">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight uppercase">
+      <div className="bg-emerald-900 py-12 md:py-16 text-white text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight uppercase">
             Finance & Markets
           </h1>
-          <p className="mt-4 text-emerald-100 text-lg max-w-2xl mx-auto">
+          <p className="mt-4 text-emerald-100 text-base sm:text-lg max-w-2xl mx-auto">
             Stay updated with the latest economic shifts, stock market trends, and global business insights.
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto py-12 px-6">
+      <div className="max-w-7xl mx-auto py-10 md:py-12 px-4 sm:px-6">
         
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-8">
+        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6 md:mb-8 flex-wrap">
           <Link to="/" className="hover:text-emerald-700">Home</Link>
           <span>/</span>
           <span className="font-bold text-emerald-800">Finance</span>
@@ -48,14 +48,14 @@ export default function Finance() {
             <p className="mt-4 text-gray-500 font-medium">Analyzing markets...</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
             {news.map((item, index) => (
               <div 
                 key={index} 
                 className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group"
               >
                 
-                <div className="relative h-56 overflow-hidden">
+                <div className="relative h-52 sm:h-56 overflow-hidden">
                   <img
                     src={item.image || "https://via.placeholder.com/600x400?text=Finance+News"}
                     alt={item.title}
@@ -68,18 +68,20 @@ export default function Finance() {
                   </div>
                 </div>
 
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-emerald-700 transition-colors line-clamp-2">
+                <div className="p-5 sm:p-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-emerald-700 transition-colors line-clamp-2">
                     {item.title}
                   </h3>
+
                   <p className="text-gray-500 mt-3 text-sm line-clamp-3 leading-relaxed">
                     {item.description}
                   </p>
                   
-                  <div className="mt-6 pt-5 border-t border-gray-50 flex justify-between items-center">
+                  <div className="mt-6 pt-5 border-t border-gray-50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                     <span className="text-[11px] text-gray-400 font-medium">
                       📅 {new Date(item.publishedAt).toLocaleDateString()}
                     </span>
+
                     <a 
                       href={item.url} 
                       target="_blank" 
@@ -97,16 +99,23 @@ export default function Finance() {
 
         
         {!loading && (
-          <div className="mt-16 bg-white p-8 rounded-3xl border border-dashed border-emerald-200 text-center">
-            <h2 className="text-xl font-bold text-emerald-900">Get Daily Financial Insights</h2>
-            <p className="text-gray-500 mt-2">Subscribe to receive market updates directly in your inbox.</p>
+          <div className="mt-12 md:mt-16 bg-white p-6 sm:p-8 rounded-3xl border border-dashed border-emerald-200 text-center">
+            <h2 className="text-lg sm:text-xl font-bold text-emerald-900">
+              Get Daily Financial Insights
+            </h2>
+
+            <p className="text-gray-500 mt-2 text-sm sm:text-base">
+              Subscribe to receive market updates directly in your inbox.
+            </p>
+
             <div className="mt-6 flex flex-col md:flex-row justify-center gap-3">
               <input 
                 type="email" 
                 placeholder="email@example.com" 
                 className="px-6 py-3 bg-gray-50 rounded-xl border-none outline-none focus:ring-2 focus:ring-emerald-500 w-full md:w-80"
               />
-              <button className="bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-800 transition shadow-lg">
+
+              <button className="bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-800 transition shadow-lg w-full md:w-auto">
                 Subscribe
               </button>
             </div>

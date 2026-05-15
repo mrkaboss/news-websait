@@ -237,8 +237,6 @@ export default function Live() {
             </div>
           </div>
         )}
-
-        {/* VIEWER */}
         {mode === "viewer" && (
           <div style={{ animation: "fadeUp 0.4s ease" }}>
             <h2 style={{ fontSize: "22px", fontWeight: 900, marginBottom: "20px" }}>📺 Reba Live</h2>

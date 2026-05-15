@@ -2,7 +2,9 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import API_URL from "../config/api.js";
 
-const CATEGORIES = ["All", "Sports", "Technology", "World", "Politics", "Business", "Culture"];
+const CATEGORIES = ["All", "Sports", "Technology", "World", "Politics", "Business", "Culture", "entertanment",  "SweetNews",
+"Teche",  "PrivacyPolicy", "Finance", "Economy", "DeepNews", "History"
+];
 
 function SkeletonCard() {
   return (
@@ -185,7 +187,7 @@ export default function News() {
               onClick={() => window.location.reload()}
               className="bg-red-600 text-white px-8 py-3 rounded-2xl font-black text-sm hover:bg-red-700 transition"
             >
-              Ongera Gerageza
+              tray agen
             </button>
           </div>
         )}
@@ -208,7 +210,7 @@ export default function News() {
         {!loading && !error && filtered.length === 0 && (
           <div className="text-center py-32 bg-white rounded-3xl shadow-sm">
             <p className="text-5xl mb-4">🔍</p>
-            <p className="text-gray-400 font-bold text-lg">Nta nkuru ziboneka muri iki cyiciro</p>
+            <p className="text-gray-400 font-bold text-lg">Not news this category</p>
           </div>
         )}
       </div>

@@ -6,10 +6,10 @@ export default function Footer() {
     <footer className="bg-[#0f172a] text-white mt-20 border-t border-white/10">
       <div className="max-w-7xl mx-auto px-6 py-16">
         
-        {/* --- TOP SECTION --- */}
+        
         <div className="grid md:grid-cols-12 gap-12 border-b border-white/5 pb-16">
           
-          {/* Column 1: Intro */}
+          
           <div className="md:col-span-4 space-y-6">
             <h2 className="text-3xl font-black bg-gradient-to-r from-pink-500 to-violet-500 bg-clip-text text-transparent">
               Global News
@@ -18,7 +18,7 @@ export default function Footer() {
               Trusted news covering technology, politics, sports, and global events. 
               Stay informed with our 24/7 real-time updates.
             </p>
-            {/* Social Icons hano kugira ngo bijyane n'izina */}
+            
             <div className="flex gap-4 pt-4">
               {[
                 { icon: <FaFacebookF />, url: "https://www.facebook.com/profile.php?id=61551680369242" },
@@ -39,7 +39,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Column 2: Big Title & Contact */}
+          
           <div className="md:col-span-4 space-y-6">
             <h2 className="text-3xl font-bold leading-tight">
               Let’s discuss <br />
@@ -58,7 +58,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Column 3: Company Links */}
+          
           <div className="md:col-span-2 space-y-6">
             <h3 className="text-lg font-bold border-b border-pink-500 w-fit pb-1">Company</h3>
             <ul className="space-y-4 text-sm text-gray-400">
