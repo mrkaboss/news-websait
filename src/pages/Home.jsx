@@ -17,7 +17,7 @@ const HERO_SLIDES = [
   {
     image: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=1400&q=80",
     category: "Sports",
-    title: "Tour du Rwanda 2026: Imyiteguro igeze kure",
+    title: "Tour du Rwanda 2026: Preparations in High Gear",
   },
   {
     image: "https://images.unsplash.com/photo-1526378787940-576a539ba69d?w=1400&q=80",
@@ -41,7 +41,7 @@ function AnimatedHeroSlider() {
   useEffect(() => {
     const t = setInterval(() => goTo((prev) => (prev + 1) % HERO_SLIDES.length), 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [current]);
 
   const slide = HERO_SLIDES[current];
 
@@ -74,7 +74,7 @@ function AnimatedHeroSlider() {
           {slide.title}
         </h2>
         <a href="#" className="inline-block bg-white text-black text-[11px] font-extrabold px-6 py-3 rounded-full uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors">
-          Soma byose →
+          Read More →
         </a>
       </div>
 
@@ -104,7 +104,7 @@ const NewsCard = ({ article }) => (
         {article.title}
       </h3>
       <Link to={`/NewsDetails/${article._id || article.id}`} className="text-blue-600 text-sm font-bold mt-4 inline-block">
-        Soma byose →
+        Read Full Story →
       </Link>
     </div>
   </div>
@@ -112,30 +112,39 @@ const NewsCard = ({ article }) => (
 
 export default function Home() {
   const [news, setNews] = useState([]);
+  const [ads, setAds] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAllNews = async () => {
+    const fetchHomeData = async () => {
       try {
-        const response = await fetch('/api/v1/news');
-        const data = await response.json();
-        setNews(Array.isArray(data) ? data : (data.news || []));
+        const newsResponse = await fetch('/api/v1/news');
+        const newsData = await newsResponse.json();
+        setNews(Array.isArray(newsData) ? newsData : (newsData.news || []));
+
+        const adsResponse = await fetch('/api/v1/ads');
+        const adsData = await adsResponse.json();
+        setAds(Array.isArray(adsData) ? adsData : (adsData.ads || []));
       } catch (error) {
-        console.error("Home News Error:", error);
+        console.error("Home Data Fetching Error:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchAllNews();
+    fetchHomeData();
   }, []);
+
+  const isVideoUrl = (url) => {
+    if (!url) return false;
+    return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans overflow-x-hidden">
       <NewsTicker />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        
-        {/* Navigation Buttons - Responsive Wrap */}
+      
         <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-8">
           {[
             { to: "/AddAds", icon: "📢", label: "Create Ad", color: "bg-red-600" },
@@ -154,8 +163,8 @@ export default function Home() {
         <HeroSlider />
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-3 gap-10 py-10">
-
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-3 gap-10 py-10 items-start">
+        
         <div className="lg:col-span-2 space-y-12">
           <BreakingNews />
 
@@ -168,26 +177,24 @@ export default function Home() {
               {loading ? (
                 <div className="col-span-full py-20 text-center flex flex-col items-center">
                   <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4" />
-                  <p className="font-bold text-gray-500">Irimo gushaka inkuru...</p>
+                  <p className="font-bold text-gray-500">Loading feeds...</p>
                 </div>
               ) : news.length > 0 ? (
                 news.slice(0, 6).map((item) => <NewsCard key={item._id || item.id} article={item} />)
               ) : (
                 <div className="col-span-full py-16 bg-white rounded-3xl text-center shadow-sm border border-dashed border-gray-300">
-                  <p className="text-gray-500 font-medium">Nta nkuru ziri kuboneka ubu.</p>
+                  <p className="text-gray-500 font-medium">No stories available at this time.</p>
                 </div>
               )}
             </div>
           </div>
         </div>
-
-        {/* Sidebar */}
         <div className="space-y-10">
           <Link to="/AddNews" className="flex justify-center items-center bg-blue-600 text-white w-full py-5 rounded-2xl font-black hover:bg-blue-700 shadow-lg transition-all active:scale-95 text-center uppercase tracking-widest text-sm">
             + Post a Story
           </Link>
-
-          <div className="bg-white p-6 rounded-3xl shadow-sm space-y-10">
+          
+          <div className="bg-white p-6 rounded-3xl shadow-sm space-y-10 border border-gray-100">
             <LatestNews />
             <TrendingNews />
             
@@ -200,10 +207,51 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </div>
-      </main>
 
-      {/* Newsletter Section */}
+          <div className="lg:sticky lg:top-6 space-y-4 z-10">
+            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Sponsored Ads</h3>
+            
+            {ads.length > 0 ? (
+              ads.map((ad, index) => (
+                <div key={ad._id || index} className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-md hover:shadow-lg transition group">
+                  <div className="relative h-44 overflow-hidden bg-black flex items-center justify-center">
+                    {isVideoUrl(ad.image) ? (
+                      <video 
+                        src={ad.image} 
+                        className="w-full h-full object-cover" 
+                        autoPlay 
+                        muted 
+                        loop 
+                        playsInline
+                      />
+                    ) : (
+                      <img 
+                        src={ad.image} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition duration-500" 
+                        alt="Ad Asset" 
+                      />
+                    )}
+
+                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-[9px] font-black uppercase shadow-sm z-20">
+                      Sponsored
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h4 className="font-bold text-sm text-gray-900">{ad.title}</h4>
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">{ad.description}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <Link to="/AddAds" className="block border-2 border-dashed border-gray-200 rounded-3xl p-8 text-center hover:border-red-400 transition group bg-white shadow-sm">
+                <span className="text-3xl block mb-2 group-hover:scale-125 transition">📢</span>
+                <p className="text-xs font-bold text-gray-400 uppercase">Advertise With Us Here</p>
+              </Link>
+            )}
+          </div>
+        </div>
+        
+      </main>
       <section className="bg-[#8B17AD] text-white py-16 md:py-24 mt-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-black mb-4 tracking-tighter">Stay in the Loop</h2>
@@ -222,7 +270,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Admin/Auth Links */}
       <section className="max-w-7xl mx-auto px-6 py-14">
         <div className="flex flex-wrap justify-center gap-4 bg-[#6A7B33] p-8 md:p-12 rounded-[2rem]">
           <Link to="/login" className="bg-white/90 backdrop-blur text-gray-800 font-bold px-8 py-3 rounded-xl hover:bg-white transition flex-1 sm:flex-none text-center">

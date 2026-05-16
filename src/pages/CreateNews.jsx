@@ -19,7 +19,7 @@ export default function CreateNews() {
       const response = await createNews(formData);
       if (response) {
         alert("Inkuru yashyizweho neza!");
-        // Urashobora no gusukura form hano
+      
       }
     } catch (error) {
       console.error("Error posting news:", error);

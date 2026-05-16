@@ -193,7 +193,7 @@ export default function Live() {
               )}
             </div>
 
-            {/* Live ID box */}
+            
             {joined && peerId && (
               <div style={{ background: "#0e0e1a", border: "1px solid #EF444444", borderRadius: "16px", padding: "16px 20px", marginBottom: "16px", maxWidth: "720px" }}>
                 <p style={{ fontSize: "11px", fontWeight: 700, color: "#EF4444", letterSpacing: "2px", marginBottom: "8px" }}>
@@ -227,7 +227,7 @@ export default function Live() {
                     {isCamOff ? "📵 Cam Off" : "📷 Futa Cam"}
                   </button>
                   <button className="btn" onClick={stopStream} style={{ background: "#1e1e30", color: "#EF4444", padding: "12px 22px", borderRadius: "12px", fontWeight: 700, fontSize: "13px", border: "1px solid #EF444444" }}>
-                    ⏹ Hagarika
+                    ⏹ Hagarik
                   </button>
                 </>
               )}
