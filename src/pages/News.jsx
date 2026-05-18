@@ -75,7 +75,7 @@ function NewsCard({ item, index, featured }) {
             to={`/NewsDetails/${item._id || index}`}
             className="bg-gray-900 text-white text-[10px] font-black px-5 py-2.5 rounded-2xl uppercase tracking-widest hover:bg-red-600 transition-all active:scale-95"
           >
-            Soma →
+           Read More  →
           </Link>
         </div>
       </div>
@@ -146,7 +146,7 @@ export default function News() {
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
             <input
               type="text"
-              placeholder="Shakisha inkuru..."
+              placeholder="sercher News..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm font-medium outline-none focus:ring-2 focus:ring-red-500 transition"

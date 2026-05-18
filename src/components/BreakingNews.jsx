@@ -1,23 +1,81 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
+import API_URL from "../config/api.js"; 
 
 const BreakingNews = () => {
-  const stories = [
-    {
-      id: "b1",
-      title: "Ikoranabuhanga rishya rya 5G rigeze mu bice by'icyaro mu Rwanda",
-      desc: "Nyuma y'igihe bitegerejwe, ubu abaturage batuye mu turere twa kure batangiye guhabwa interineti yihuta cyane.",
-      category: "Technology",
-      image: "https://images.unsplash.com/photo-1562408590-e32931084e23?q=80&w=2070&auto=format&fit=crop"
-    },
-    {
-      id: "b2",
-      title: "Amavubi yatsinze umukino wa gicuti ku ntsinzi ikomeye",
-      desc: "Mu mukino wabereye i Kigali, ikipe y'igihugu yerekanye ko iri mu bihe byiza imbere y'abafana bayo.",
-      category: "Sports",
-      image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2093&auto=format&fit=crop"
-    }
-  ];
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+useEffect(() => {
+    const fetchBreakingNews = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        
+        const fullUrl = "http://localhost:3000/api/v1/news";
+        const res = await fetch(fullUrl); 
+        
+        if (!res.ok) {
+          throw new Error(`Server responded with status: ${res.status} ${res.statusText}`);
+        }
+        
+        const data = await res.json();
+        
+        let extractedStories = null;
+
+        if (Array.isArray(data)) {
+          extractedStories = data;
+        } else if (data && typeof data === 'object') {
+    
+          const arrayKey = Object.keys(data).find(key => Array.isArray(data[key]));
+          if (arrayKey) {
+            extractedStories = data[arrayKey];
+          }
+        }
+
+        if (Array.isArray(extractedStories)) {
+          setStories(extractedStories); 
+        } else {
+          throw new Error("Data format mismatch: The API object does not contain an array.");
+        }
+
+      } catch (err) {
+        setError(err.message || "Failed to load stories from server");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBreakingNews();
+  }, []);
+  if (loading) {
+    return (
+      <div className="min-h-[40vh] flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-[40vh] flex items-center justify-center bg-white text-red-500 font-semibold p-4 text-center">
+        <div className="max-w-md">
+          <p className="text-xl mb-2">⚠️ Connection Error</p>
+          <p className="text-sm text-gray-500 font-normal bg-gray-50 p-3 rounded-xl border border-gray-100 break-all">
+            {error}
+          </p>
+          <p className="text-xs text-gray-400 mt-2 font-normal">
+            Check if your backend server port matches your config settings.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (stories.length === 0) {
+    return null; 
+  }
 
   return (
     <div className="min-h-[60vh] bg-white py-12">
@@ -33,11 +91,11 @@ const BreakingNews = () => {
 
         <div className="grid md:grid-cols-2 gap-8">
           {stories.map((story) => (
-            <div key={story.id} className="group relative overflow-hidden rounded-[2rem] bg-black h-[450px] shadow-xl">
+            <div key={story._id || story.id} className="group relative overflow-hidden rounded-[2rem] bg-black h-[450px] shadow-xl">
               <img 
-                src={story.image} 
+                src={story.image || `${API_URL}/${story.banner}`} 
                 className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-700" 
-                alt="" 
+                alt={story.title} 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
               
@@ -49,10 +107,10 @@ const BreakingNews = () => {
                   {story.title}
                 </h3>
                 <p className="text-gray-300 text-sm mb-6 line-clamp-2 italic">
-                  {story.desc}
+                  {story.description || story.desc}
                 </p>
                 <Link 
-                  to={`/NewsDetails/${story.id}`} 
+                  to={`/NewsDetails/${story._id || story.id}`} 
                   className="inline-block bg-white text-black px-6 py-2 rounded-xl font-bold text-sm hover:bg-red-600 hover:text-white transition-colors"
                 >
                   Read Full Story

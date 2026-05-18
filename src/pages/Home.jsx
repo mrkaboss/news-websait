@@ -118,11 +118,12 @@ export default function Home() {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        const newsResponse = await fetch('/api/v1/news');
+        const newsResponse = await fetch(`${API_URL}/api/v1/news`);
         const newsData = await newsResponse.json();
         setNews(Array.isArray(newsData) ? newsData : (newsData.news || []));
 
-        const adsResponse = await fetch('/api/v1/ads');
+
+const adsResponse  = await fetch(`${API_URL}/api/v1/ads`);
         const adsData = await adsResponse.json();
         setAds(Array.isArray(adsData) ? adsData : (adsData.ads || []));
       } catch (error) {
