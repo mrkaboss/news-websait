@@ -11,13 +11,13 @@ export default function NewsDetails() {
   const [notFound, setNotFound] = useState(false);
   const [token, setToken] = useState(null);
 
-  // ✅ Fata token uvane localStorage
+  // ✅ Fata token uyikuye muri localStorage
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     if (savedToken) setToken(savedToken);
   }, []);
 
-  // ✅ Fetch inkuru imwe gusa ifunguye /:id
+  // ✅ Fetch inkuru imwe gusa ifunguye ukoresheje /:id
   useEffect(() => {
     if (!id) return;
 
@@ -27,18 +27,25 @@ export default function NewsDetails() {
         setNotFound(false);
 
         const response = await fetch(`${API_URL}/api/v1/news/${id}`);
+        
+        if (!response.ok) {
+          setNotFound(true);
+          setLoading(false);
+          return;
+        }
+
         const data = await response.json();
 
-        // ✅ Fata data uko backend yawe isubiza
-        const article = data.data || data.news || data;
+        // ✅ Fata data uko backend isubiza (Gukosora niba iza nk'urukurikirane rw'ibintu)
+        const parsedArticle = data.data || data.news || data;
 
-        if (!article || !article._id) {
+        if (!parsedArticle || (!parsedArticle._id && !parsedArticle.id)) {
           setNotFound(true);
         } else {
-          setArticle(article);
+          setArticle(parsedArticle);
         }
       } catch (err) {
-        console.error("NewsDetails Error:", err);
+        console.error("NewsDetails Fetching Error Context:", err);
         setNotFound(true);
       } finally {
         setLoading(false);
@@ -48,103 +55,117 @@ export default function NewsDetails() {
     fetchArticle();
   }, [id]);
 
-  // Loading
+  // Loading View Layout Frame
   if (loading) return (
-    <div className="flex flex-col justify-center items-center h-screen bg-gray-50">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4" />
-      <p className="font-bold text-gray-500 italic">Gushaka inkuru...</p>
+    <div className="flex flex-col justify-center items-center h-screen bg-slate-50 font-sans">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-600 border-t-transparent mb-4" />
+      <p className="font-bold text-slate-500 text-xs uppercase tracking-widest animate-pulse">Fetching Article Stream...</p>
     </div>
   );
 
-  // Not found
+  // Not Found State Shield
   if (notFound || !article) return (
-    <div className="flex flex-col justify-center items-center h-screen bg-gray-50 gap-4">
-      <p className="text-5xl">📭</p>
-      <p className="font-black text-gray-700 text-xl">Inkuru ntiboneka</p>
-      <p className="text-gray-400 text-sm">Inkuru washakaga ishobora gusibwa cyangwa itagihari</p>
+    <div className="flex flex-col justify-center items-center h-screen bg-slate-50 gap-4 font-sans px-6 text-center">
+      <p className="text-6xl mb-2">📭</p>
+      <p className="font-black text-slate-800 text-2xl uppercase tracking-tight">Article Not Found</p>
+      <p className="text-slate-400 text-sm max-w-sm leading-relaxed">The article you are searching for might have been deleted, moved, or is temporarily unavailable.</p>
       <Link
-        to="/News"
-        className="mt-4 bg-red-600 text-white px-8 py-3 rounded-2xl font-black text-sm hover:bg-red-700 transition"
+        to="/"
+        className="mt-6 bg-slate-900 text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition shadow-md"
       >
-        ← Subira kuri News
+        ← Return To Dashboard
       </Link>
     </div>
   );
 
+  // Isomo ry'aho ishusho ituruka (Url Resolution Handler)
+  const imageSource = article.image || (article.banner ? `${API_URL}/${article.banner}` : null);
+
   return (
-    <div className="bg-white min-h-screen pb-20 font-sans">
+    <div className="bg-slate-50 min-h-screen pb-20 font-sans antialiased">
       <div className="max-w-4xl mx-auto px-6 pt-10">
 
-        {/* Back button */}
-        <Link
-          to="/News"
-          className="flex items-center gap-2 text-gray-500 hover:text-red-600 font-bold transition mb-8"
-        >
-          <FaArrowLeft /> Subira kuri News
-        </Link>
+        {/* Back navigation button link wrapper */}
+        <div className="mb-8">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-slate-400 hover:text-slate-900 text-xs font-black uppercase tracking-widest transition-colors"
+          >
+            <FaArrowLeft /> Back to home
+          </Link>
+        </div>
 
-        {/* Category + Title */}
+        {/* Category + Title + Metadata Display Row */}
         <div className="space-y-4 mb-8">
-          <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
-            {article.category || "Global News"}
+          <span className="inline-block bg-slate-200 text-slate-800 px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">
+            {article.category || "General News"}
           </span>
-          <h1 className="text-3xl md:text-5xl font-black text-gray-900 leading-[1.1] tracking-tight">
+          
+          <h1 className="text-3xl md:text-5xl font-black font-serif text-slate-900 leading-tight tracking-tight">
             {article.title}
           </h1>
 
-          {/* Meta info */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          {/* Meta Info Logs */}
+          <div className="flex flex-wrap items-center gap-6 pt-2 border-y border-slate-200/60 py-4 mt-6">
             {article.author?.name && (
-              <span className="flex items-center gap-1.5 text-sm text-gray-500 font-bold">
-                <FaGlobe className="text-red-500" />
-                {article.author.name}
+              <span className="flex items-center gap-2 text-xs text-slate-600 font-extrabold uppercase tracking-wider">
+                <FaGlobe className="text-red-600 text-sm" />
+                By {article.author.name}
               </span>
             )}
-            {article.createdAt && (
-              <span className="flex items-center gap-1.5 text-sm text-gray-400">
-                <FaRegClock />
-                {new Date(article.createdAt).toLocaleDateString("en-US", {
+            
+            <span className="flex items-center gap-1.5 text-xs text-slate-400 font-bold uppercase tracking-wider">
+              <FaRegClock className="text-sm" />
+              {article.createdAt || article.publishedAt ? (
+                new Date(article.createdAt || article.publishedAt).toLocaleDateString("en-US", {
                   year: "numeric", month: "long", day: "numeric"
-                })}
-              </span>
-            )}
+                })
+              ) : (
+                "Recent Publication"
+              )}
+            </span>
           </div>
         </div>
 
-        {/* Image */}
-        {article.image && (
-          <div className="my-10 rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white">
+        {/* Dynamic Image Wrapper Grid Frame */}
+        {imageSource && (
+          <div className="my-8 rounded-3xl overflow-hidden shadow-md bg-slate-200 max-h-[480px]">
             <img
-              src={article.image}
+              src={imageSource}
               alt={article.title}
-              className="w-full h-auto object-cover max-h-[500px]"
-              onError={e => { e.currentTarget.style.display = "none"; }}
+              className="w-full h-full object-cover"
+              onError={e => { 
+                // Niba ishusho yanzwe cyangwa yanze gufunguka, ishyiraho fallback image yizewe aho gufunga page yose
+                e.currentTarget.src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200"; 
+              }}
             />
           </div>
         )}
 
-        {/* Content */}
-        <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-12">
-          <p className="mb-6 text-lg leading-loose whitespace-pre-line">
-            {article.content || "Nta makuru arambuye aboneka."}
-          </p>
+        {/* Main Text Content Body Area */}
+        <div className="bg-white rounded-3xl p-8 md:p-12 border border-slate-100 shadow-sm">
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed text-sm sm:text-base font-medium">
+            <p className="whitespace-pre-line leading-loose">
+              {article.content || article.description || article.desc || "No comprehensive content detail reported for this index track configuration log."}
+            </p>
+          </div>
         </div>
 
-        {/* Contact Author */}
-        <div className="mt-16 border-t pt-10">
+        {/* Safe Verification Contact Author Block */}
+        <div className="mt-12">
           {token ? (
             <ContactAuthor
-              authorId={article.author?._id}
+              authorId={article.author?._id || article.author?.id}
               token={token}
             />
           ) : (
-            <div className="p-6 bg-yellow-50 rounded-2xl border border-yellow-100 text-center">
-              <p className="text-gray-700 font-bold">
-                Wabanje{" "}
-                <Link to="/login" className="text-red-600 underline">
-                  ukinjira (Login)
+            <div className="p-6 bg-amber-50/60 rounded-2xl border border-amber-100 text-center">
+              <p className="text-slate-700 font-bold text-xs sm:text-sm uppercase tracking-wide">
+                Please{" "}
+                <Link to="/login" className="text-red-600 underline font-black hover:text-red-700">
+                  Login Here
                 </Link>{" "}
-                kugira ngo wandikire umunyamakuru.
+                to initiate a correspondence thread with the editor.
               </p>
             </div>
           )}

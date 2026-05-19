@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import API_URL from "../config/api.js";
 
-const CATEGORIES = ["All", "Sports", "Technology", "World", "Politics", "Business", "Culture", "entertanment",  "SweetNews",
-"Teche",  "PrivacyPolicy", "Finance", "Economy", "DeepNews", "History"
+const CATEGORIES = ["All", "Sports", "Technology", "World", "Politics", "Business", "Culture", "Entertainment", "SweetNews",
+"Teche", "PrivacyPolicy", "Finance", "Economy", "DeepNews", "History" , "Agriculture"
 ];
 
 function SkeletonCard() {
@@ -20,14 +20,26 @@ function SkeletonCard() {
   );
 }
 
-function NewsCard({ item, index, featured }) {
+function NewsCard({ item, index, featured, onDelete }) {
   return (
     <div
-      className={`bg-white rounded-3xl overflow-hidden group flex flex-col transition-all duration-300 hover:-translate-y-1 ${
+      className={`bg-white rounded-3xl overflow-hidden group flex flex-col transition-all duration-300 hover:-translate-y-1 relative ${
         featured ? "md:col-span-2" : ""
       }`}
       style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.07)" }}
     >
+    
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(item._id || item.id);
+        }}
+        className="absolute top-4 right-4 z-30 bg-white/90 hover:bg-red-600 p-2 rounded-full text-red-600 hover:text-white transition-colors border border-gray-100 shadow-md backdrop-blur-sm"
+        title="Delete Item"
+      >
+        <span className="text-xs block transform active:scale-90">🗑️</span>
+      </button>
+
       <div className={`overflow-hidden relative ${featured ? "h-72" : "h-52"}`}>
         <img
           src={item.image || item.urlToImage || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80"}
@@ -40,7 +52,7 @@ function NewsCard({ item, index, featured }) {
           {item.category || item.source?.name || "News"}
         </span>
         {featured && (
-          <span className="absolute top-4 right-4 bg-black/70 text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-sm">
+          <span className="absolute top-4 right-14 bg-black/70 text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-sm">
             ★ Featured
           </span>
         )}
@@ -72,7 +84,7 @@ function NewsCard({ item, index, featured }) {
               : new Date().toDateString()}
           </span>
           <Link
-            to={`/NewsDetails/${item._id || index}`}
+            to={`/NewsDetails/${item._id || item.id || index}`}
             className="bg-gray-900 text-white text-[10px] font-black px-5 py-2.5 rounded-2xl uppercase tracking-widest hover:bg-red-600 transition-all active:scale-95"
           >
            Read More  →
@@ -104,7 +116,7 @@ export default function News() {
 
         setNews(newsArray);
       } catch (err) {
-        console.error("News Error:", err);
+        console.error("News Fetching Error:", err);
         setError(true);
       } finally {
         setLoading(false);
@@ -112,6 +124,28 @@ export default function News() {
     };
     fetchNews();
   }, []);
+
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to permanently delete this news story?")) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/news/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the resource from server execution handles.");
+      }
+
+    
+      setNews(prevNews => prevNews.filter(item => (item._id || item.id) !== id));
+
+    } catch (err) {
+      console.error("Deletion Error Handling Configuration:", err);
+      alert("Failed to delete. Please check backend server setup routing connections.");
+    }
+  };
 
   const filtered = news
     .filter(item =>
@@ -127,26 +161,25 @@ export default function News() {
     <div className="bg-gray-50 min-h-screen pb-20 font-sans">
       <div className="max-w-7xl mx-auto py-10 px-6">
 
-        
+    
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 border-b pb-8">
           <div>
-            <p className="text-red-600 text-[10px] font-black uppercase tracking-[4px] mb-2">
+            <p className="text-red-600 text-[10px] font-black tracking-[4px] mb-2 uppercase">
               {new Date().toDateString()}
             </p>
             <h1 className="text-4xl font-black text-gray-900 tracking-tighter leading-none">
               GLOBAL <span className="text-red-600">NEWS</span>
             </h1>
             <p className="text-gray-400 text-sm mt-1 font-medium">
-              {news.length} inkuru ziboneka
+              {filtered.length} stories available
             </p>
           </div>
 
-          
           <div className="relative w-full md:w-72">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
             <input
               type="text"
-              placeholder="sercher News..."
+              placeholder="Search news..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm font-medium outline-none focus:ring-2 focus:ring-red-500 transition"
@@ -171,46 +204,45 @@ export default function News() {
           ))}
         </div>
 
-       
+    
         {loading && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         )}
 
-        
         {error && !loading && (
           <div className="text-center py-32 bg-white rounded-3xl shadow-sm">
             <p className="text-5xl mb-4">📡</p>
-            <p className="text-gray-400 font-bold text-lg mb-6">Backend ntiyunganye — Fungura server yawe</p>
+            <p className="text-gray-400 font-bold text-lg mb-6">Backend integration mismatch — Connect your server instance</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-red-600 text-white px-8 py-3 rounded-2xl font-black text-sm hover:bg-red-700 transition"
+              className="bg-red-600 text-white px-8 py-3 rounded-2xl font-black text-sm hover:bg-red-700 transition uppercase tracking-wider text-xs"
             >
-              tray agen
+              Try Again
             </button>
           </div>
         )}
 
-       
+    
         {!loading && !error && filtered.length > 0 && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filtered.map((item, index) => (
               <NewsCard
-                key={item._id || index}
+                key={item._id || item.id || index}
                 item={item}
                 index={index}
                 featured={index === 0}
+                onDelete={handleDelete}
               />
             ))}
           </div>
         )}
 
-        
         {!loading && !error && filtered.length === 0 && (
           <div className="text-center py-32 bg-white rounded-3xl shadow-sm">
             <p className="text-5xl mb-4">🔍</p>
-            <p className="text-gray-400 font-bold text-lg">Not news this category</p>
+            <p className="text-gray-400 font-bold text-lg">No news found in this category</p>
           </div>
         )}
       </div>
