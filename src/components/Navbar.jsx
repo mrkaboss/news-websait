@@ -66,13 +66,12 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
       {isOpen && (
         <div className={`md:hidden border-t ${darkMode ? "bg-black border-gray-800" : "bg-white border-gray-100"} px-4 pt-2 pb-6 space-y-4`}>
           <div className="flex flex-col gap-4 font-semibold pt-2">
             <Link to="/" onClick={() => setIsOpen(false)}>{t('nav.home', 'Home')}</Link>
-            <Link to="/world" onClick={() => setIsOpen(false)}>{t('nav.world', 'World')}</Link>
-            <Link to="/SearchNews" onClick={() => setIsOpen(false)}>{t('nav.search', 'Search')}</Link>
+            <Link to="/Contact" onClick={() => setIsOpen(false)}>{t('nav.Contact', 'Contact')}</Link>
+            <Link to="/News" onClick={() => setIsOpen(false)}>{t('nav.News', 'News')}</Link>
             <Link to="/LiveNews" onClick={() => setIsOpen(false)}>{t('nav.live', 'Live')}</Link>
           </div>
           
