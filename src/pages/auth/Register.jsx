@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-// import API_URL from "../config/api.js";
+// import API_URL from "../config/api.js"; 
 
 const COUNTRIES = [
   "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia",
@@ -60,12 +60,12 @@ function AnimatedCounter({ target, label }) {
 
 export default function Register() {
   const navigate = useNavigate();
-  const [form, setForm]               = useState({ name: "", email: "", password: "", country: "" });
-  const [loading, setLoading]         = useState(false);
-  const [error, setError]             = useState("");
+  const [form, setForm] = useState({ name: "", email: "", password: "", country: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [countrySearch, setCountrySearch] = useState("");
-  const [showDropdown, setShowDropdown]   = useState(false);
-  const [showPassword, setShowPassword]   = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const dropdownRef = useRef(null);
 
   const filteredCountries = COUNTRIES.filter(c =>
@@ -84,19 +84,34 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.country) { setError("Please select your country!"); return; }
+    
     try {
       setLoading(true);
       setError("");
+      
       const res = await fetch(`${API_URL}/api/v1/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+      
       const data = await res.json();
-      if (!res.ok) { setError(data.message || "Something went wrong"); return; }
+      
+      if (!res.ok) { 
+        setError(data.message || "Registration failed. Check your details."); 
+        return; 
+      }
+      
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      alert("Account created successfully! 🎉");
       navigate("/login");
-    } catch {
-      setError("Server error — Please try again");
+      
+    } catch (err) {
+      console.error("Registration submit error:", err);
+      setError("Server network connection error — Please check backend terminal.");
     } finally {
       setLoading(false);
     }
@@ -114,18 +129,14 @@ export default function Register() {
 
       <div className="flex-1 flex flex-col lg:grid lg:grid-cols-2 min-h-screen">
 
-        {/* ── LEFT — Branding ─────────────────────────────── */}
         <div className="relative bg-[#111] flex flex-col justify-between p-8 sm:p-12
                         lg:min-h-screen
                         /* mobile: compact top banner */
                         max-lg:py-10 max-lg:min-h-0">
 
-          {/* BG gradients */}
           <div className="absolute inset-0 pointer-events-none"
             style={{ backgroundImage: "radial-gradient(circle at 20% 80%, #DC262622 0%, transparent 50%), radial-gradient(circle at 80% 20%, #1D4ED822 0%, transparent 50%)" }}
           />
-
-          {/* Logo + headline */}
           <div className="relative">
             <div className="flex items-baseline gap-1 mb-8 lg:mb-12">
               <span className="text-2xl font-black text-white">NEWS</span>
@@ -139,7 +150,6 @@ export default function Register() {
             </p>
           </div>
 
-          {/* Stats — hidden on very small screens */}
           <div className="relative mt-10 pt-8 border-t border-gray-800
                           grid grid-cols-3 gap-4
                           max-sm:hidden">
@@ -149,7 +159,6 @@ export default function Register() {
           </div>
         </div>
 
-        {/* ── RIGHT — Form ─────────────────────────────────── */}
         <div className="register-animate flex items-center justify-center
                         px-6 py-12 sm:px-10 bg-[#f8f7f4]">
           <div className="w-full max-w-md">
@@ -162,7 +171,6 @@ export default function Register() {
               </Link>
             </p>
 
-            {/* Error */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-5 text-sm text-red-600 font-semibold">
                 ⚠️ {error}
@@ -171,7 +179,6 @@ export default function Register() {
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-              {/* Full Name */}
               <div>
                 <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
                   Full Name
@@ -186,7 +193,6 @@ export default function Register() {
                 />
               </div>
 
-              {/* Email */}
               <div>
                 <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
                   Email
@@ -201,7 +207,6 @@ export default function Register() {
                 />
               </div>
 
-              {/* Password */}
               <div>
                 <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
                   Password
@@ -219,14 +224,13 @@ export default function Register() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(s => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-sm"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-sm bg-transparent border-none cursor-pointer"
                   >
                     {showPassword ? "🙈" : "👁"}
                   </button>
                 </div>
               </div>
-
-              {/* Country */}
+              
               <div ref={dropdownRef}>
                 <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
                   Country
@@ -254,12 +258,10 @@ export default function Register() {
                     className="w-full px-4 py-3 bg-gray-50 border-[1.5px] border-gray-200 rounded-xl text-sm outline-none focus:border-red-500 transition box-border"
                   />
 
-                  {/* Selected check */}
                   {form.country && (
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-sm">✓</span>
                   )}
 
-                  {/* Dropdown */}
                   {showDropdown && filteredCountries.length > 0 && !form.country && (
                     <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white border-[1.5px] border-gray-200 rounded-xl max-h-48 overflow-y-auto z-50 shadow-xl">
                       {filteredCountries.map(country => (
@@ -280,7 +282,6 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}

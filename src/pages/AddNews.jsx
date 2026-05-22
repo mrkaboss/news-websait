@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; 
+import API_URL from "../config/api.js";
 import { 
-  FaVideo, FaImage, FaPaperPlane, FaArrowLeft, 
-  FaTimes, FaEye, FaSave, FaClock, FaPenNib, 
-  FaListAlt 
+  FaVideo, FaImage, FaPaperPlane, FaTimes, FaEye, 
+  FaSave, FaClock, FaPenNib, FaListAlt 
 } from "react-icons/fa";
 
 export default function AddNews() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState(null);
@@ -19,6 +20,7 @@ export default function AddNews() {
 
   const wordCount = description.trim() ? description.trim().split(/\s+/).length : 0;
   const readingTime = Math.ceil(wordCount / 200); 
+
   useEffect(() => {
     const savedDraft = localStorage.getItem("news_draft");
     if (savedDraft) {
@@ -41,15 +43,54 @@ export default function AddNews() {
     }, 1000);
   };
 
+  
   const submit = async (e) => {
     e.preventDefault();
+    
+    if (!image) {
+      alert("Please upload a cover image before publishing! ⚠️");
+      return;
+    }
+
     setLoading(true);
 
-    setTimeout(() => { 
+    try {
+    
+      const token = localStorage.getItem("token") || localStorage.getItem("admin_token");
+      
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("content", description); 
+      formData.append("category", category);
+      formData.append("image", image); 
+      if (videoUrl) formData.append("videoUrl", videoUrl);
+
+
+      const response = await fetch(`${API_URL}/api/v1/news`, {
+        method: "POST",
+        headers: {
+        
+          "Authorization": `Bearer ${token}`
+        },
+        body: formData 
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong while publishing.");
+      }
+
       alert("Published Successfully! 🚀"); 
       localStorage.removeItem("news_draft"); 
+      navigate("/"); 
+      
+    } catch (error) {
+      console.error("Publishing error:", error);
+      alert(`Failed to publish: ${error.message} ❌`);
+    } finally {
       setLoading(false); 
-    }, 2000); 
+    }
   };
 
   return (
@@ -142,7 +183,7 @@ export default function AddNews() {
                     {preview ? (
                       <>
                         <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-                        <button onClick={() => {setImage(null); setPreview(null)}} className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full shadow-xl opacity-0 group-hover:opacity-100 transition"><FaTimes /></button>
+                        <button type="button" onClick={() => {setImage(null); setPreview(null)}} className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full shadow-xl opacity-0 group-hover:opacity-100 transition"><FaTimes /></button>
                       </>
                     ) : (
                       <div className="text-center">
@@ -171,7 +212,7 @@ export default function AddNews() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-5 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-[2rem] font-black text-lg shadow-xl shadow-blue-100 hover:shadow-blue-200 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3"
+                  className="w-full py-5 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-[2rem] font-black text-lg shadow-xl shadow-blue-100 hover:shadow-blue-200 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Publishing..." : <><FaPaperPlane /> Publish</>}
                 </button>
@@ -191,7 +232,7 @@ export default function AddNews() {
               <div className="my-12 rounded-[2rem] overflow-hidden shadow-2xl bg-gray-50 aspect-video">
                 {preview ? <img src={preview} alt="" className="w-full h-full object-cover" /> : <div className="flex items-center justify-center h-full text-gray-300 italic">No media preview</div>}
               </div>
-              <div className="prose prose-2xl max-w-none text-gray-800 leading-relaxed font-serif">
+              <div className="prose prose-2xl max-w-none text-gray-800 leading-relaxed font-serif whitespace-pre-wrap">
                  {description || "Write something amazing..."}
               </div>
             </div>
